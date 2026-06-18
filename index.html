@@ -11,6 +11,7 @@ main { max-width:850px; margin:auto; padding:24px; }
 .card { background:white; padding:24px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.08); margin:20px 0; }
 button { padding:14px 20px; border:0; border-radius:10px; background:#2563eb; color:white; font-size:16px; margin:6px; }
 button:hover { opacity:.85; cursor:pointer; }
+button:disabled {background: #9ca3af;cursor: not-allowed;}
 .result { font-size:24px; font-weight:bold; color:#1e3a8a; }
 .bar-wrap { background:#e5e7eb; border-radius:999px; overflow:hidden; margin:8px 0 16px; }
 .bar { height:28px; background:#2563eb; width:0%; color:white; text-align:center; line-height:28px; }
@@ -125,14 +126,42 @@ onValue(stayRef, (snapshot) => {
   updateDisplay();
 });
 
-document.getElementById("switchBtn").addEventListener("click", () => {
+const switchBtn = document.getElementById("switchBtn");
+const stayBtn = document.getElementById("stayBtn");
+
+const voted = localStorage.getItem("montyHallVoted");
+
+if (voted) {
+  switchBtn.disabled = true;
+  stayBtn.disabled = true;
+  thanks.textContent = "この端末ではすでに回答済みです。";
+}
+
+function disableButtons() {
+  switchBtn.disabled = true;
+  stayBtn.disabled = true;
+  switchBtn.style.background = "#9ca3af";
+  stayBtn.style.background = "#9ca3af";
+}
+
+switchBtn.addEventListener("click", () => {
+  if (localStorage.getItem("montyHallVoted")) return;
+
   runTransaction(switchRef, current => (current || 0) + 1);
+  localStorage.setItem("montyHallVoted", "switch");
+
   thanks.textContent = "回答ありがとうございます：変更する";
+  disableButtons();
 });
 
-document.getElementById("stayBtn").addEventListener("click", () => {
+stayBtn.addEventListener("click", () => {
+  if (localStorage.getItem("montyHallVoted")) return;
+
   runTransaction(stayRef, current => (current || 0) + 1);
+  localStorage.setItem("montyHallVoted", "stay");
+
   thanks.textContent = "回答ありがとうございます：変更しない";
+  disableButtons();
 });
 </script>
 
