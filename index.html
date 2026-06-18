@@ -5,28 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>数学科文化祭2026</title>
 <style>
-body { font-family: sans-serif; margin: 0; background:#f8fafc; color:#111827; }
-header { background:#1e3a8a; color:white; padding:50px 20px; text-align:center; }
-main { max-width:800px; margin:auto; padding:24px; }
+body { margin:0; font-family:sans-serif; background:#f8fafc; color:#111827; line-height:1.7; }
+header { background:#1e3a8a; color:white; text-align:center; padding:50px 20px; }
+main { max-width:850px; margin:auto; padding:24px; }
 .card { background:white; padding:24px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.08); margin:20px 0; }
-button { padding:14px 20px; border:0; border-radius:10px; background:#2563eb; color:white; font-size:16px; }
-.count { font-size:42px; font-weight:bold; color:#1e3a8a; }
+button { padding:14px 20px; border:0; border-radius:10px; background:#2563eb; color:white; font-size:16px; margin:6px; }
+button:hover { opacity:.85; cursor:pointer; }
+.result { font-size:24px; font-weight:bold; color:#1e3a8a; }
+.bar-wrap { background:#e5e7eb; border-radius:999px; overflow:hidden; margin:8px 0 16px; }
+.bar { height:28px; background:#2563eb; width:0%; color:white; text-align:center; line-height:28px; }
+.small { color:#6b7280; font-size:14px; }
 </style>
 </head>
 
 <body>
 <header>
   <h1>Learning from Data</h1>
-  <p>来場者のデータで学ぶ数学</p>
+  <p>モンティホール問題を来場者のデータで確かめよう</p>
 </header>
 
 <main>
   <div class="card">
-    <h2>参加者カウンター</h2>
-    <p>ボタンを押すと、参加者数がリアルタイムで増えます。</p>
-    <button id="joinBtn">参加する</button>
-    <p>現在の参加者数</p>
-    <div class="count"><span id="count">0</span>人</div>
+    <h2>モンティホール問題</h2>
+    <p>
+      3つのドアがあります。1つだけが当たりです。<br>
+      あなたは1つのドアを選びました。<br>
+      司会者が、残りのドアのうちハズレのドアを1つ開けました。
+    </p>
+    <p><strong>あなたはドアを変更しますか？</strong></p>
+
+    <button id="switchBtn">変更する</button>
+    <button id="stayBtn">変更しない</button>
+
+    <p id="thanks" class="small"></p>
+  </div>
+
+  <div class="card">
+    <h2>リアルタイム集計</h2>
+    <p>参加者数</p>
+    <div class="result"><span id="total">0</span>人</div>
+
+    <h3>変更する</h3>
+    <p><span id="switchCount">0</span>人 / <span id="switchPercent">0</span>%</p>
+    <div class="bar-wrap"><div id="switchBar" class="bar"></div></div>
+
+    <h3>変更しない</h3>
+    <p><span id="stayCount">0</span>人 / <span id="stayPercent">0</span>%</p>
+    <div class="bar-wrap"><div id="stayBar" class="bar"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>理論上はどうなる？</h2>
+    <p>
+      モンティホール問題では、ドアを変更すると当たる確率は約 <strong>2/3</strong>、  
+      変更しないと当たる確率は約 <strong>1/3</strong> になります。
+    </p>
+    <p class="small">
+      文化祭では、来場者の選択が増えるほど、実際のデータがどのように分布するかを見ることができます。
+    </p>
   </div>
 </main>
 
@@ -47,18 +83,56 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const countRef = ref(db, "counter/participants");
-const countEl = document.getElementById("count");
-const joinBtn = document.getElementById("joinBtn");
+const switchRef = ref(db, "montyHall/switch");
+const stayRef = ref(db, "montyHall/stay");
 
-onValue(countRef, (snapshot) => {
-  countEl.textContent = snapshot.val() || 0;
+const totalEl = document.getElementById("total");
+const switchCountEl = document.getElementById("switchCount");
+const stayCountEl = document.getElementById("stayCount");
+const switchPercentEl = document.getElementById("switchPercent");
+const stayPercentEl = document.getElementById("stayPercent");
+const switchBar = document.getElementById("switchBar");
+const stayBar = document.getElementById("stayBar");
+const thanks = document.getElementById("thanks");
+
+let switchCount = 0;
+let stayCount = 0;
+
+function updateDisplay() {
+  const total = switchCount + stayCount;
+  const switchPercent = total ? Math.round((switchCount / total) * 100) : 0;
+  const stayPercent = total ? Math.round((stayCount / total) * 100) : 0;
+
+  totalEl.textContent = total;
+  switchCountEl.textContent = switchCount;
+  stayCountEl.textContent = stayCount;
+  switchPercentEl.textContent = switchPercent;
+  stayPercentEl.textContent = stayPercent;
+
+  switchBar.style.width = switchPercent + "%";
+  stayBar.style.width = stayPercent + "%";
+  switchBar.textContent = switchPercent + "%";
+  stayBar.textContent = stayPercent + "%";
+}
+
+onValue(switchRef, (snapshot) => {
+  switchCount = snapshot.val() || 0;
+  updateDisplay();
 });
 
-joinBtn.addEventListener("click", () => {
-  runTransaction(countRef, (current) => {
-    return (current || 0) + 1;
-  });
+onValue(stayRef, (snapshot) => {
+  stayCount = snapshot.val() || 0;
+  updateDisplay();
+});
+
+document.getElementById("switchBtn").addEventListener("click", () => {
+  runTransaction(switchRef, current => (current || 0) + 1);
+  thanks.textContent = "回答ありがとうございます：変更する";
+});
+
+document.getElementById("stayBtn").addEventListener("click", () => {
+  runTransaction(stayRef, current => (current || 0) + 1);
+  thanks.textContent = "回答ありがとうございます：変更しない";
 });
 </script>
 
