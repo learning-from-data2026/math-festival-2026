@@ -12,7 +12,54 @@ main { max-width:850px; margin:auto; padding:24px; }
 button { padding:14px 20px; border:0; border-radius:10px; background:#2563eb; color:white; font-size:16px; margin:6px; }
 button:hover { opacity:.85; cursor:pointer; }
 button:disabled { background:#9ca3af; cursor:not-allowed; }
-.door { font-size:48px; }
+.doorArea {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.doorBtn {
+  width: 130px;
+  height: 190px;
+  background: linear-gradient(135deg, #7c3f18, #b87333);
+  border: 6px solid #4b260f;
+  border-radius: 10px 10px 4px 4px;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  position: relative;
+  box-shadow: 0 8px 0 #3b1f0d;
+}
+
+.doorBtn::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 90px;
+  width: 12px;
+  height: 12px;
+  background: #facc15;
+  border-radius: 50%;
+}
+
+.doorBtn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 0 #3b1f0d;
+}
+
+.doorBtn.selected {
+  outline: 5px solid #facc15;
+  transform: translateY(-4px);
+}
+
+.theoryBox {
+  background: #eff6ff;
+  border-left: 6px solid #2563eb;
+  padding: 16px;
+  border-radius: 10px;
+}
 .result { font-size:24px; font-weight:bold; color:#1e3a8a; }
 </style>
 </head>
@@ -28,9 +75,11 @@ button:disabled { background:#9ca3af; cursor:not-allowed; }
     <h2>ステップ1：ドアを選ぼう</h2>
     <p>3つのドアのうち、1つだけが当たりです。</p>
 
-    <button class="doorBtn" data-door="A">🚪A</button>
-    <button class="doorBtn" data-door="B">🚪B</button>
-    <button class="doorBtn" data-door="C">🚪C</button>
+<div class="doorArea">
+  <button class="doorBtn" data-door="A">A</button>
+  <button class="doorBtn" data-door="B">B</button>
+  <button class="doorBtn" data-door="C">C</button>
+</div>
 
     <p id="message"></p>
   </div>
