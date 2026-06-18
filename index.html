@@ -157,7 +157,8 @@ document.querySelectorAll(".doorBtn").forEach(btn => {
 
     prizeDoor = doors[Math.floor(Math.random() * 3)];
     firstChoice = btn.dataset.door;
-
+    document.querySelectorAll(".doorBtn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
     openedDoor = doors.find(d => d !== firstChoice && d !== prizeDoor);
 
     message.textContent = `あなたはドア${firstChoice}を選びました。`;
