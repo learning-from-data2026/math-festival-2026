@@ -11,58 +11,59 @@ main { max-width:850px; margin:auto; padding:24px; }
 .card { background:white; padding:24px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.08); margin:20px 0; }
 button { padding:14px 20px; border:0; border-radius:10px; background:#2563eb; color:white; font-size:16px; margin:6px; }
 button:hover { opacity:.85; cursor:pointer; }
-button:disabled {background: #9ca3af;cursor: not-allowed;}
+button:disabled { background:#9ca3af; cursor:not-allowed; }
+.door { font-size:48px; }
 .result { font-size:24px; font-weight:bold; color:#1e3a8a; }
-.bar-wrap { background:#e5e7eb; border-radius:999px; overflow:hidden; margin:8px 0 16px; }
-.bar { height:28px; background:#2563eb; width:0%; color:white; text-align:center; line-height:28px; }
-.small { color:#6b7280; font-size:14px; }
 </style>
 </head>
 
 <body>
 <header>
   <h1>Learning from Data</h1>
-  <p>モンティホール問題を来場者のデータで確かめよう</p>
+  <p>モンティホール問題を体験しよう</p>
 </header>
 
 <main>
   <div class="card">
-    <h2>モンティホール問題</h2>
-    <p>
-      3つのドアがあります。1つだけが当たりです。<br>
-      あなたは1つのドアを選びました。<br>
-      司会者が、残りのドアのうちハズレのドアを1つ開けました。
-    </p>
-    <p><strong>あなたはドアを変更しますか？</strong></p>
+    <h2>ステップ1：ドアを選ぼう</h2>
+    <p>3つのドアのうち、1つだけが当たりです。</p>
 
-    <button id="switchBtn">変更する</button>
+    <button class="doorBtn" data-door="A">🚪A</button>
+    <button class="doorBtn" data-door="B">🚪B</button>
+    <button class="doorBtn" data-door="C">🚪C</button>
+
+    <p id="message"></p>
+  </div>
+
+  <div class="card" id="choiceArea" style="display:none;">
+    <h2>ステップ2：変更しますか？</h2>
+    <p id="openDoorText"></p>
+
     <button id="stayBtn">変更しない</button>
+    <button id="switchBtn">変更する</button>
+  </div>
 
-    <p id="thanks" class="small"></p>
+  <div class="card" id="resultArea" style="display:none;">
+    <h2>ステップ3：結果</h2>
+    <p class="result" id="resultText"></p>
   </div>
 
   <div class="card">
     <h2>リアルタイム集計</h2>
-    <p>参加者数</p>
-    <div class="result"><span id="total">0</span>人</div>
+    <p>参加者数：<strong><span id="total">0</span>人</strong></p>
 
-    <h3>変更する</h3>
-    <p><span id="switchCount">0</span>人 / <span id="switchPercent">0</span>%</p>
-    <div class="bar-wrap"><div id="switchBar" class="bar"></div></div>
-
-    <h3>変更しない</h3>
-    <p><span id="stayCount">0</span>人 / <span id="stayPercent">0</span>%</p>
-    <div class="bar-wrap"><div id="stayBar" class="bar"></div></div>
-  </div>
-
-  <div class="card">
-    <h2>理論上はどうなる？</h2>
+    <h3>変更した人</h3>
     <p>
-      モンティホール問題では、ドアを変更すると当たる確率は約 <strong>2/3</strong>、  
-      変更しないと当たる確率は約 <strong>1/3</strong> になります。
+      <span id="switchTotal">0</span>人中
+      <span id="switchWin">0</span>人が当たり
+      / 勝率 <strong><span id="switchRate">0</span>%</strong>
     </p>
-    <p class="small">
-      文化祭では、来場者の選択が増えるほど、実際のデータがどのように分布するかを見ることができます。
+
+    <h3>変更しなかった人</h3>
+    <p>
+      <span id="stayTotal">0</span>人中
+      <span id="stayWin">0</span>人が当たり
+      / 勝率 <strong><span id="stayRate">0</span>%</strong>
     </p>
   </div>
 </main>
@@ -72,96 +73,109 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCpX30lW2pJT4N3skRN1CLZKFbDvU5PDH8",
+  apiKey: "あなたのapiKey",
   authDomain: "math-festival-2026.firebaseapp.com",
   databaseURL: "https://math-festival-2026-default-rtdb.firebaseio.com",
   projectId: "math-festival-2026",
   storageBucket: "math-festival-2026.firebasestorage.app",
   messagingSenderId: "308071776370",
-  appId: "1:308071776370:web:6a5cd6490810c875e282eb"
+  appId: "あなたのappId"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const switchRef = ref(db, "montyHall/switch");
-const stayRef = ref(db, "montyHall/stay");
+const statsRef = ref(db, "montyHallGame");
 
-const totalEl = document.getElementById("total");
-const switchCountEl = document.getElementById("switchCount");
-const stayCountEl = document.getElementById("stayCount");
-const switchPercentEl = document.getElementById("switchPercent");
-const stayPercentEl = document.getElementById("stayPercent");
-const switchBar = document.getElementById("switchBar");
-const stayBar = document.getElementById("stayBar");
-const thanks = document.getElementById("thanks");
+let prizeDoor;
+let firstChoice;
+let openedDoor;
 
-let switchCount = 0;
-let stayCount = 0;
+const doors = ["A", "B", "C"];
 
-function updateDisplay() {
-  const total = switchCount + stayCount;
-  const switchPercent = total ? Math.round((switchCount / total) * 100) : 0;
-  const stayPercent = total ? Math.round((stayCount / total) * 100) : 0;
+const message = document.getElementById("message");
+const choiceArea = document.getElementById("choiceArea");
+const openDoorText = document.getElementById("openDoorText");
+const resultArea = document.getElementById("resultArea");
+const resultText = document.getElementById("resultText");
 
-  totalEl.textContent = total;
-  switchCountEl.textContent = switchCount;
-  stayCountEl.textContent = stayCount;
-  switchPercentEl.textContent = switchPercent;
-  stayPercentEl.textContent = stayPercent;
+document.querySelectorAll(".doorBtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (localStorage.getItem("montyHallGameVoted")) {
+      message.textContent = "この端末ではすでに参加済みです。";
+      return;
+    }
 
-  switchBar.style.width = switchPercent + "%";
-  stayBar.style.width = stayPercent + "%";
-  switchBar.textContent = switchPercent + "%";
-  stayBar.textContent = stayPercent + "%";
-}
+    prizeDoor = doors[Math.floor(Math.random() * 3)];
+    firstChoice = btn.dataset.door;
 
-onValue(switchRef, (snapshot) => {
-  switchCount = snapshot.val() || 0;
-  updateDisplay();
+    openedDoor = doors.find(d => d !== firstChoice && d !== prizeDoor);
+
+    message.textContent = `あなたはドア${firstChoice}を選びました。`;
+    openDoorText.textContent = `司会者がハズレのドア${openedDoor}を開けました。変更しますか？`;
+    choiceArea.style.display = "block";
+  });
 });
 
-onValue(stayRef, (snapshot) => {
-  stayCount = snapshot.val() || 0;
-  updateDisplay();
+document.getElementById("stayBtn").addEventListener("click", () => {
+  finishGame(false);
 });
 
-const switchBtn = document.getElementById("switchBtn");
-const stayBtn = document.getElementById("stayBtn");
-
-const voted = localStorage.getItem("montyHallVoted");
-
-if (voted) {
-  switchBtn.disabled = true;
-  stayBtn.disabled = true;
-  thanks.textContent = "この端末ではすでに回答済みです。";
-}
-
-function disableButtons() {
-  switchBtn.disabled = true;
-  stayBtn.disabled = true;
-  switchBtn.style.background = "#9ca3af";
-  stayBtn.style.background = "#9ca3af";
-}
-
-switchBtn.addEventListener("click", () => {
-  if (localStorage.getItem("montyHallVoted")) return;
-
-  runTransaction(switchRef, current => (current || 0) + 1);
-  localStorage.setItem("montyHallVoted", "switch");
-
-  thanks.textContent = "回答ありがとうございます：変更する";
-  disableButtons();
+document.getElementById("switchBtn").addEventListener("click", () => {
+  finishGame(true);
 });
 
-stayBtn.addEventListener("click", () => {
-  if (localStorage.getItem("montyHallVoted")) return;
+function finishGame(switched) {
+  if (localStorage.getItem("montyHallGameVoted")) return;
 
-  runTransaction(stayRef, current => (current || 0) + 1);
-  localStorage.setItem("montyHallVoted", "stay");
+  let finalChoice = firstChoice;
 
-  thanks.textContent = "回答ありがとうございます：変更しない";
-  disableButtons();
+  if (switched) {
+    finalChoice = doors.find(d => d !== firstChoice && d !== openedDoor);
+  }
+
+  const win = finalChoice === prizeDoor;
+
+  resultArea.style.display = "block";
+  resultText.textContent = win
+    ? `🎉 当たり！正解はドア${prizeDoor}でした。`
+    : `😭 ハズレ。正解はドア${prizeDoor}でした。`;
+
+  localStorage.setItem("montyHallGameVoted", "true");
+
+  const path = switched
+    ? (win ? "switchWin" : "switchLose")
+    : (win ? "stayWin" : "stayLose");
+
+  runTransaction(ref(db, "montyHallGame/" + path), current => (current || 0) + 1);
+
+  document.getElementById("stayBtn").disabled = true;
+  document.getElementById("switchBtn").disabled = true;
+}
+
+onValue(statsRef, snapshot => {
+  const data = snapshot.val() || {};
+
+  const switchWin = data.switchWin || 0;
+  const switchLose = data.switchLose || 0;
+  const stayWin = data.stayWin || 0;
+  const stayLose = data.stayLose || 0;
+
+  const switchTotal = switchWin + switchLose;
+  const stayTotal = stayWin + stayLose;
+  const total = switchTotal + stayTotal;
+
+  document.getElementById("total").textContent = total;
+  document.getElementById("switchTotal").textContent = switchTotal;
+  document.getElementById("switchWin").textContent = switchWin;
+  document.getElementById("stayTotal").textContent = stayTotal;
+  document.getElementById("stayWin").textContent = stayWin;
+
+  document.getElementById("switchRate").textContent =
+    switchTotal ? Math.round((switchWin / switchTotal) * 100) : 0;
+
+  document.getElementById("stayRate").textContent =
+    stayTotal ? Math.round((stayWin / stayTotal) * 100) : 0;
 });
 </script>
 
