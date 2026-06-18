@@ -1,25 +1,99 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数学科文化祭2026</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数学科文化祭2026</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  line-height: 1.7;
+  background: #f8fafc;
+  color: #111827;
+}
+
+header {
+  background: #1e3a8a;
+  color: white;
+  text-align: center;
+  padding: 70px 20px;
+}
+
+header h1 {
+  font-size: 42px;
+  margin: 0;
+}
+
+header p {
+  font-size: 20px;
+}
+
+section {
+  max-width: 900px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* スマホ用 */
+@media (max-width: 600px) {
+  header {
+    padding: 50px 16px;
+  }
+
+  header h1 {
+    font-size: 30px;
+  }
+
+  header p {
+    font-size: 16px;
+  }
+
+  section {
+    padding: 28px 16px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}
+</style>
 </head>
+
 <body>
 
-<h1>数学科文化祭2026</h1>
+<header>
+  <h1>数学科文化祭2026</h1>
+  <p>数学の魅力を体験しよう</p>
+</header>
 
-<p>
-数学の魅力を体験できる展示を用意しています。
-</p>
+<section>
+  <h2>展示内容</h2>
 
-<h2>展示内容</h2>
+  <div class="card">
+    <h3>数学クイズ</h3>
+    <p>楽しく挑戦できる数学クイズを用意しています。</p>
+  </div>
 
-<ul>
-    <li>数学クイズ</li>
-    <li>フラクタル展示</li>
-    <li>AI体験コーナー</li>
-</ul>
+  <div class="card">
+    <h3>フラクタル展示</h3>
+    <p>数学が生み出す美しい図形の世界を紹介します。</p>
+  </div>
+
+  <div class="card">
+    <h3>AI体験コーナー</h3>
+    <p>数学とAIのつながりをわかりやすく体験できます。</p>
+  </div>
+</section>
 
 </body>
 </html>
