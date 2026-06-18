@@ -4,96 +4,63 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>数学科文化祭2026</title>
-
 <style>
-body {
-  margin: 0;
-  font-family: sans-serif;
-  line-height: 1.7;
-  background: #f8fafc;
-  color: #111827;
-}
-
-header {
-  background: #1e3a8a;
-  color: white;
-  text-align: center;
-  padding: 70px 20px;
-}
-
-header h1 {
-  font-size: 42px;
-  margin: 0;
-}
-
-header p {
-  font-size: 20px;
-}
-
-section {
-  max-width: 900px;
-  margin: auto;
-  padding: 40px 20px;
-}
-
-.card {
-  background: white;
-  border-radius: 14px;
-  padding: 24px;
-  margin: 20px 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* スマホ用 */
-@media (max-width: 600px) {
-  header {
-    padding: 50px 16px;
-  }
-
-  header h1 {
-    font-size: 30px;
-  }
-
-  header p {
-    font-size: 16px;
-  }
-
-  section {
-    padding: 28px 16px;
-  }
-
-  .card {
-    padding: 18px;
-  }
-}
+body { font-family: sans-serif; margin: 0; background:#f8fafc; color:#111827; }
+header { background:#1e3a8a; color:white; padding:50px 20px; text-align:center; }
+main { max-width:800px; margin:auto; padding:24px; }
+.card { background:white; padding:24px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.08); margin:20px 0; }
+button { padding:14px 20px; border:0; border-radius:10px; background:#2563eb; color:white; font-size:16px; }
+.count { font-size:42px; font-weight:bold; color:#1e3a8a; }
 </style>
 </head>
 
 <body>
-
 <header>
-  <h1>数学科文化祭2026</h1>
-  <p>数学の魅力を体験しよう</p>
+  <h1>Learning from Data</h1>
+  <p>来場者のデータで学ぶ数学</p>
 </header>
 
-<section>
-  <h2>展示内容</h2>
-
+<main>
   <div class="card">
-    <h3>数学クイズ</h3>
-    <p>楽しく挑戦できる数学クイズを用意しています。</p>
+    <h2>参加者カウンター</h2>
+    <p>ボタンを押すと、参加者数がリアルタイムで増えます。</p>
+    <button id="joinBtn">参加する</button>
+    <p>現在の参加者数</p>
+    <div class="count"><span id="count">0</span>人</div>
   </div>
+</main>
 
-  <div class="card">
-    <h3>フラクタル展示</h3>
-    <p>数学が生み出す美しい図形の世界を紹介します。</p>
-  </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  <div class="card">
-    <h3>AI体験コーナー</h3>
-    <p>数学とAIのつながりをわかりやすく体験できます。</p>
-  </div>
-</section>
+const firebaseConfig = {
+  apiKey: "AIzaSyCpX30lW2pJT4N3skRN1CLZKFbDvU5PDH8",
+  authDomain: "math-festival-2026.firebaseapp.com",
+  databaseURL: "https://math-festival-2026-default-rtdb.firebaseio.com",
+  projectId: "math-festival-2026",
+  storageBucket: "math-festival-2026.firebasestorage.app",
+  messagingSenderId: "308071776370",
+  appId: "1:308071776370:web:6a5cd6490810c875e282eb"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const countRef = ref(db, "counter/participants");
+const countEl = document.getElementById("count");
+const joinBtn = document.getElementById("joinBtn");
+
+onValue(countRef, (snapshot) => {
+  countEl.textContent = snapshot.val() || 0;
+});
+
+joinBtn.addEventListener("click", () => {
+  runTransaction(countRef, (current) => {
+    return (current || 0) + 1;
+  });
+});
+</script>
 
 </body>
 </html>
