@@ -13,6 +13,15 @@
     justify-items: center;
   }
 
+  .doorLabel {
+    display: block;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #1e3a8a;
+  }
+  
   .doorBtn {
     width: 130px;
   }
@@ -92,17 +101,20 @@ button:disabled { background:#9ca3af; cursor:not-allowed; }
     <p>3つのドアのうち、1つだけが当たりです。</p>
 
 <div class="doorArea">
-  <button class="doorBtn" data-door="A">
-    <img src="door.jpg" alt="ドアA">
-  </button>
+<button class="doorBtn" data-door="A">
+  <span class="doorLabel">A</span>
+  <img src="door.jpg" alt="ドアA">
+</button>
 
-  <button class="doorBtn" data-door="B">
-    <img src="door.jpg" alt="ドアB">
-  </button>
+<button class="doorBtn" data-door="B">
+  <span class="doorLabel">B</span>
+  <img src="door.jpg" alt="ドアB">
+</button>
 
-  <button class="doorBtn" data-door="C">
-    <img src="door.jpg" alt="ドアC">
-  </button>
+<button class="doorBtn" data-door="C">
+  <span class="doorLabel">C</span>
+  <img src="door.jpg" alt="ドアC">
+</button>
 </div>
 
     <p id="message"></p>
