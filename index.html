@@ -21,46 +21,27 @@ button:disabled { background:#9ca3af; cursor:not-allowed; }
 }
 
 .doorBtn {
-  width: 130px;
-  height: 190px;
-  background: linear-gradient(135deg, #7c3f18, #b87333);
-  border: 6px solid #4b260f;
-  border-radius: 10px 10px 4px 4px;
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
+  background: none;
+  border: none;
+  box-shadow: none;
+  width: 160px;
+  padding: 0;
   position: relative;
-  box-shadow: 0 8px 0 #3b1f0d;
 }
 
-.doorBtn::after {
-  content: "";
-  position: absolute;
-
-  right: 14px;
-  top: 85px;
-
-  width: 10px;
-  height: 28px;
-
-  background: linear-gradient(
-    to bottom,
-    #fde68a,
-    #f59e0b
-  );
-
-  border-radius: 10px;
-  border: 1px solid #b45309;
+.doorBtn img {
+  width: 100%;
+  display: block;
+  transition: transform 0.2s;
 }
 
-.doorBtn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 0 #3b1f0d;
+.doorBtn:hover img {
+  transform: scale(1.05);
 }
 
-.doorBtn.selected {
-  outline: 5px solid #facc15;
-  transform: translateY(-4px);
+.doorBtn.selected img {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 12px gold);
 }
 
 .theoryBox {
@@ -85,9 +66,17 @@ button:disabled { background:#9ca3af; cursor:not-allowed; }
     <p>3つのドアのうち、1つだけが当たりです。</p>
 
 <div class="doorArea">
-  <button class="doorBtn" data-door="A">A</button>
-  <button class="doorBtn" data-door="B">B</button>
-  <button class="doorBtn" data-door="C">C</button>
+  <button class="doorBtn" data-door="A">
+    <img src="door.jpg" alt="ドアA">
+  </button>
+
+  <button class="doorBtn" data-door="B">
+    <img src="door.jpg" alt="ドアB">
+  </button>
+
+  <button class="doorBtn" data-door="C">
+    <img src="door.jpg" alt="ドアC">
+  </button>
 </div>
 
     <p id="message"></p>
