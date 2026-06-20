@@ -254,10 +254,7 @@ const resultText = document.getElementById("resultText");
 
 document.querySelectorAll(".doorBtn").forEach(btn => {
   btn.addEventListener("click", () => {
-    if (localStorage.getItem("montyHallGameVoted")) {
-      message.textContent = "この端末ではすでに参加済みです。";
-      return;
-    }
+
 
     prizeDoor = doors[Math.floor(Math.random() * 3)];
     firstChoice = btn.dataset.door;
@@ -280,7 +277,7 @@ document.getElementById("switchBtn").addEventListener("click", () => {
 });
 
 function finishGame(switched) {
-  if (localStorage.getItem("montyHallGameVoted")) return;
+  
 
   let finalChoice = firstChoice;
 
@@ -294,17 +291,23 @@ function finishGame(switched) {
   resultText.textContent = win
     ? `🎉 当たり！正解はドア${prizeDoor}でした。`
     : `😭 ハズレ。正解はドア${prizeDoor}でした。`;
-
-  localStorage.setItem("montyHallGameVoted", "true");
+  
 
   const path = switched
     ? (win ? "switchWin" : "switchLose")
     : (win ? "stayWin" : "stayLose");
 
-  runTransaction(ref(db, "montyHallGame/" + path), current => (current || 0) + 1);
+ runTransaction(
+  ref(db, "montyHallGame/" + path),
+  current => (current || 0) + 1
+);
 
-  document.getElementById("stayBtn").disabled = true;
-  document.getElementById("switchBtn").disabled = true;
+setTimeout(() => {
+  location.reload();
+}, 3000);
+
+}
+  
 }
 
 onValue(statsRef, snapshot => {
