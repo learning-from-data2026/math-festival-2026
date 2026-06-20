@@ -173,7 +173,7 @@ button:disabled { background:#9ca3af; cursor:not-allowed; }
       ということになるのです。
     </p>
   </div>
-
+<div>
   <div class="card">
   <h2>なぜ変更すると当たりやすいのか？</h2>
 
@@ -277,8 +277,6 @@ document.getElementById("switchBtn").addEventListener("click", () => {
 });
 
 function finishGame(switched) {
-  
-
   let finalChoice = firstChoice;
 
   if (switched) {
@@ -291,21 +289,19 @@ function finishGame(switched) {
   resultText.textContent = win
     ? `🎉 当たり！正解はドア${prizeDoor}でした。`
     : `😭 ハズレ。正解はドア${prizeDoor}でした。`;
-  
 
   const path = switched
     ? (win ? "switchWin" : "switchLose")
     : (win ? "stayWin" : "stayLose");
 
- runTransaction(
-  ref(db, "montyHallGame/" + path),
-  current => (current || 0) + 1
-);
+  runTransaction(
+    ref(db, "montyHallGame/" + path),
+    current => (current || 0) + 1
+  );
 
-setTimeout(() => {
-  location.reload();
-}, 3000);
-
+  setTimeout(() => {
+    location.reload();
+  }, 3000);
 }
 
 onValue(statsRef, snapshot => {
