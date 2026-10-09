@@ -122,17 +122,17 @@ button:disabled { background:#9ca3af; cursor:not-allowed; }
     <p id="message"></p>
   </div>
 
-  <div class="card" id="choiceArea" style="display:none;">
+  <div class="card" id="choiceArea">
     <h2>ステップ2：変更しますか？</h2>
-    <p id="openDoorText"></p>
+    <p id="openDoorText">ステップ1でドアを選ぶと、ここに司会者のヒントが表示されます。</p>
 
-    <button id="stayBtn">変更しない</button>
-    <button id="switchBtn">変更する</button>
+    <button id="stayBtn" disabled>変更しない</button>
+    <button id="switchBtn" disabled>変更する</button>
   </div>
 
-  <div class="card" id="resultArea" style="display:none;">
+  <div class="card" id="resultArea">
     <h2>ステップ3：結果</h2>
-    <p class="result" id="resultText"></p>
+    <p class="result" id="resultText">ここに結果が表示されます。</p>
   </div>
 
   <div class="card">
