@@ -122,17 +122,17 @@ button:disabled { background:#9ca3af; cursor:not-allowed; }
     <p id="message"></p>
   </div>
 
-  <div class="card" id="choiceArea">
+  <div class="card" id="choiceArea" style="display:none;">
     <h2>ステップ2：変更しますか？</h2>
-    <p id="openDoorText">ステップ1でドアを選ぶと、ここに司会者のヒントが表示されます。</p>
+    <p id="openDoorText"></p>
 
-    <button id="stayBtn" disabled>変更しない</button>
-    <button id="switchBtn" disabled>変更する</button>
+    <button id="stayBtn">変更しない</button>
+    <button id="switchBtn">変更する</button>
   </div>
 
-  <div class="card" id="resultArea">
+  <div class="card" id="resultArea" style="display:none;">
     <h2>ステップ3：結果</h2>
-    <p class="result" id="resultText">ここに結果が表示されます。</p>
+    <p class="result" id="resultText"></p>
   </div>
 
   <div class="card">
@@ -154,166 +154,73 @@ button:disabled { background:#9ca3af; cursor:not-allowed; }
     </p>
   </div>
 
-  
   <div class="card">
-    <h2>モンティ・ホール問題の理論値</h2>
+  <h2>モンティホール問題の理論値</h2>
 
+  <div class="theoryBox">
     <p>
-      結論から言うと、<strong>ドアを変更したほうが2倍当たりやすい</strong>です。
+      最初に選んだドアが当たりである確率は <strong><span class="mathFrac">\( \frac{1}{3} \)</span></strong>、
+      ハズレである確率は <strong><span class="mathFrac">\( \frac{2}{3} \)</span></strong> です。
     </p>
 
-    <div class="rateBoxes">
-      <div class="rateBox">
-        <div class="label">変更しない</div>
-        <div class="big">\( \frac{1}{3} \)</div>
-        <div class="sub">約33%</div>
-      </div>
-      <div class="rateBox win">
-        <div class="label">変更する</div>
-        <div class="big">\( \frac{2}{3} \)</div>
-        <div class="sub">約67%</div>
-      </div>
-    </div>
-
     <p>
-      「ドアが2つ残ったのだから、確率は 1/2 ずつでは？」と思うのが普通です。
-      実はここが、このパラドクスの最大の落とし穴です。
+      次に司会者はハズレのドアを1つ開けます。このとき、<br>
+      <strong>ドアを変更しない場合の勝率は<span class="mathFrac">\( \frac{1}{3} \)</span>(約33%)、</strong> <br>
+      <strong>ドアを変更する場合の勝率は<span class="mathFrac">\( \frac{2}{3} \)</span>(約67%)</strong> になります。
     </p>
 
-    <div class="point">
-      <strong>ポイント</strong><br>
-      司会者は<strong>どれが当たりかを知っていて</strong>、
-      <strong>必ずハズレのドアを開けます</strong>。
-      この「わざとハズレを開ける」という行動が、確率を偏らせるのです。
-    </div>
-
     <p>
-      最初に選んだドアが当たりだった確率は、司会者がドアを開けても
-      <strong>\( \frac{1}{3} \) のまま変わりません</strong>。
-      そのため、残りのドアの当たり確率は
-      \( 1 - \frac{1}{3} = \frac{2}{3} \) になります。
+      つまり、理論上は
+      <strong>「変更する」方が2倍当たりやすい</strong>
+      ということになるのです。
     </p>
   </div>
-
-  <!-- ===== なぜ変更した方が当たりやすいのか ===== -->
+<div>
   <div class="card">
-    <h2>なぜ変更した方が当たりやすいのか？</h2>
+  <h2>なぜ変更した方が当たりやすいのか？</h2>
 
-    <h3>考え方①：確率の「行き先」を追いかける</h3>
+  <div class="theoryBox">
 
-    <ol class="stepList">
-      <li>
-        最初にドアを1つ選びます。
-        <strong>選んだドアが当たりの確率は \( \frac{1}{3} \)</strong> です。
-      </li>
-      <li>
-        <strong>選ばなかった2つのドアのどちらかが当たりの確率は
-        \( \frac{2}{3} \)</strong> です。
-      </li>
-      <li>
-        司会者は、選ばなかった2つのうち<strong>ハズレのほうを必ず開けます</strong>。
-        あなたが選んだドアは開けられないので、
-        あなたのドアの確率は \( \frac{1}{3} \) のままです。
-      </li>
-      <li>
-        すると、選ばなかった2つに集まっていた \( \frac{2}{3} \) が、
-        <strong>残った1つのドアにすべて集中</strong>します。
-      </li>
-      <li>
-        だから、<strong>変更すると \( \frac{2}{3} \) で当たり</strong>、
-        変更しないと \( \frac{1}{3} \) で当たりなのです。
-      </li>
-    </ol>
-
-    <h3>考え方②：全パターンを書き出す</h3>
     <p>
-      あなたが<strong>ドアAを選んだ</strong>として、当たりの位置ごとに
-      3通り(それぞれ確率 \( \frac{1}{3} \))を調べます。
+      最初に選んだドアが当たりである確率は
+      <strong>1/3</strong>、
+      ハズレである確率は
+      <strong>2/3</strong>
+      です。
     </p>
 
-    <div class="tableWrap">
-      <table class="patternTable">
-        <tr>
-          <th>当たりの位置<br>(確率 \( \frac{1}{3} \) ずつ)</th>
-          <th>司会者が開けるドア</th>
-          <th>変更しない</th>
-          <th>変更する</th>
-        </tr>
-        <tr>
-          <td>A(最初の選択が正解)</td>
-          <td>BかC(どちらでもよい)</td>
-          <td class="good">当たり 🎉</td>
-          <td class="bad">ハズレ</td>
-        </tr>
-        <tr>
-          <td>B</td>
-          <td>C(Bは当たりなので開けられない)</td>
-          <td class="bad">ハズレ</td>
-          <td class="good">当たり 🎉(Bに変更)</td>
-        </tr>
-        <tr>
-          <td>C</td>
-          <td>B(Cは当たりなので開けられない)</td>
-          <td class="bad">ハズレ</td>
-          <td class="good">当たり 🎉(Cに変更)</td>
-        </tr>
-      </table>
-    </div>
+    <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+      <tr>
+        <th style="border:1px solid #ccc; padding:8px;">最初の選択</th>
+        <th style="border:1px solid #ccc; padding:8px;">確率</th>
+        <th style="border:1px solid #ccc; padding:8px;">変更した結果</th>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">当たりを選んでいた</td>
+        <td style="border:1px solid #ccc; padding:8px;">1/3</td>
+        <td style="border:1px solid #ccc; padding:8px;">ハズレになる</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">ハズレを選んでいた</td>
+        <td style="border:1px solid #ccc; padding:8px;">2/3</td>
+        <td style="border:1px solid #ccc; padding:8px;">当たりになる</td>
+      </tr>
+    </table>
 
-    <p style="margin-top:14px;">
-      3通りのうち、<strong>変更しない場合は1勝2敗、変更する場合は2勝1敗</strong>です。
-      つまり、勝率は次のようになります。
+    <p style="margin-top:15px;">
+      したがって、
     </p>
 
     <p style="font-size:20px; text-align:center;">
-      勝率(変更する)= \( \frac{2}{3} \) ≈ 66.7%<br>
-      勝率(変更しない)= \( \frac{1}{3} \) ≈ 33.3%
+      勝率(変更)=<span class="mathFrac">\( \frac{2}{3} \)</span>≈66.7%
     </p>
 
-    <div class="point">
-      <strong>覚え方</strong><br>
-      「最初に<strong>ハズレを選んでいる確率が \( \frac{2}{3} \)</strong>。
-      ハズレを選んでいたなら、司会者がもう1つのハズレを開けてくれるので、
-      <strong>変更すれば必ず当たり</strong>になる」と考えると分かりやすいです。
-    </div>
-
-    <h3>考え方③:ドアが100個だったら?</h3>
-    <div class="hundred">
-      <p>
-        ドアが<strong>100個</strong>あり、当たりは1つだけだとします。
-        あなたは1つ選びます(当たりの確率は \( \frac{1}{100} \))。
-      </p>
-      <p>
-        そのあと、司会者が<strong>残り99個のうち98個のハズレを開けました</strong>。
-        閉じているのは、あなたのドアと、もう1つのドアだけです。
-      </p>
-      <p>
-        さて、あなたは変更しますか？
-        あなたのドアが当たりの確率は \( \frac{1}{100} \) のまま、
-        もう一方のドアは \( \frac{99}{100} \) です。
-        ほとんどの人が「変更する」と答えるはずです。
-      </p>
-      <p>
-        ドアが3個の場合も、考え方はまったく同じです。
-        ただし差が \( \frac{1}{3} \) と \( \frac{2}{3} \) と小さいので、気づきにくいだけなのです。
-      </p>
-    </div>
-
-    <h3>よくある疑問</h3>
-    <p>
-      <strong>Q. 残り2つなのだから 1/2 ずつではないの？</strong><br>
-      A. 司会者が<strong>ランダムにドアを開けて、たまたまハズレだった</strong>のなら
-      1/2 になります。しかし実際は、司会者が当たりを知っていて
-      <strong>必ずハズレを選んで開ける</strong>ので、そこに情報が加わります。
-      その情報によって、確率が \( \frac{1}{3} \) と \( \frac{2}{3} \) に分かれるのです。
+    <p style="font-size:20px; text-align:center;">
+      勝率(変更しない)=<span class="mathFrac">\( \frac{1}{3} \)</span>≈33.3%
     </p>
-    <p>
-      <strong>Q. 本当に2倍になるの？</strong><br>
-      A. 上の「リアルタイム集計」を見てみてください。
-      参加者が増えるほど、変更した人の勝率が約67%、
-      変更しなかった人の勝率が約33%に近づいていくはずです。
-    </p>
+
   </div>
+</div> 
 </main>
 
 <script type="module">
