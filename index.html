@@ -242,52 +242,73 @@ const db = getDatabase(app);
 
 const statsRef = ref(db, "montyHallGame");
 
-let prizeDoor;
-let firstChoice;
-let openedDoor;
+let prizeDoor = null;
+let firstChoice = null;
+let openedDoor = null;
+let gameFinished = false;
 
 const doors = ["A", "B", "C"];
 
 const message = document.getElementById("message");
-const choiceArea = document.getElementById("choiceArea");
 const openDoorText = document.getElementById("openDoorText");
-const resultArea = document.getElementById("resultArea");
 const resultText = document.getElementById("resultText");
+const stayBtn = document.getElementById("stayBtn");
+const switchBtn = document.getElementById("switchBtn");
+
+const OPEN_DOOR_DEFAULT = "ステップ1でドアを選ぶと、ここに司会者のヒントが表示されます。";
+const RESULT_DEFAULT = "ここに結果が表示されます。";
+const RESET_DELAY = 5000; // 結果を見せてから自動で最初に戻るまでの時間(ミリ秒)
+
+// 最初の状態に戻す(ページの再読み込みはしない)
+function resetGame() {
+  prizeDoor = null;
+  firstChoice = null;
+  openedDoor = null;
+  gameFinished = false;
+
+  document.querySelectorAll(".doorBtn").forEach(b => b.classList.remove("selected"));
+  message.textContent = "";
+  openDoorText.textContent = OPEN_DOOR_DEFAULT;
+  resultText.textContent = RESULT_DEFAULT;
+  stayBtn.disabled = true;
+  switchBtn.disabled = true;
+}
 
 document.querySelectorAll(".doorBtn").forEach(btn => {
   btn.addEventListener("click", () => {
-
+    // すでに1つ選んでいる間、または結果表示中は選び直せない
+    if (firstChoice !== null || gameFinished) return;
 
     prizeDoor = doors[Math.floor(Math.random() * 3)];
     firstChoice = btn.dataset.door;
-    document.querySelectorAll(".doorBtn").forEach(b => b.classList.remove("selected"));
     btn.classList.add("selected");
     openedDoor = doors.find(d => d !== firstChoice && d !== prizeDoor);
 
     message.textContent = `あなたはドア${firstChoice}を選びました。`;
     openDoorText.textContent = `司会者がハズレのドア${openedDoor}を開けました。変更しますか？`;
-    choiceArea.style.display = "block";
+    stayBtn.disabled = false;
+    switchBtn.disabled = false;
   });
 });
 
-document.getElementById("stayBtn").addEventListener("click", () => {
-  finishGame(false);
-});
-
-document.getElementById("switchBtn").addEventListener("click", () => {
-  finishGame(true);
-});
+stayBtn.addEventListener("click", () => finishGame(false));
+switchBtn.addEventListener("click", () => finishGame(true));
 
 function finishGame(switched) {
-  let finalChoice = firstChoice;
+  if (firstChoice === null || gameFinished) return;
+  gameFinished = true;
 
+  // 二重クリック防止
+  stayBtn.disabled = true;
+  switchBtn.disabled = true;
+
+  let finalChoice = firstChoice;
   if (switched) {
     finalChoice = doors.find(d => d !== firstChoice && d !== openedDoor);
   }
 
   const win = finalChoice === prizeDoor;
 
-  resultArea.style.display = "block";
   resultText.textContent = win
     ? `🎉 当たり！正解はドア${prizeDoor}でした。`
     : `😭 ハズレ。正解はドア${prizeDoor}でした。`;
@@ -301,9 +322,7 @@ function finishGame(switched) {
     current => (current || 0) + 1
   );
 
-  setTimeout(() => {
-    location.reload();
-  }, 3000);
+  setTimeout(resetGame, RESET_DELAY);
 }
 
 onValue(statsRef, snapshot => {
